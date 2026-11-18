@@ -1,0 +1,127 @@
+# Services to change the watercare schedules of a spa. Target the
+# "Watercare schedules" sensor of the watercare mode you want to change, for
+# example "Watercare schedules Standard". The sensor's attributes list the
+# current schedules and their numbers.
+
+add_schedule:
+  target:
+    entity:
+      integration: gecko
+      domain: sensor
+  fields:
+    type:
+      required: true
+      example: filtration
+      selector:
+        select:
+          options:
+            - economy
+            - filtration
+    days:
+      required: true
+      example: weekday
+      selector:
+        select:
+          options:
+            - everyday
+            - weekday
+            - weekend
+            - sunday
+            - monday
+            - tuesday
+            - wednesday
+            - thursday
+            - friday
+            - saturday
+    to_day:
+      required: false
+      example: friday
+      selector:
+        select:
+          options:
+            - sunday
+            - monday
+            - tuesday
+            - wednesday
+            - thursday
+            - friday
+            - saturday
+    start:
+      required: true
+      example: "12:00:00"
+      selector:
+        time:
+    stop:
+      required: true
+      example: "13:00:00"
+      selector:
+        time:
+
+modify_schedule:
+  target:
+    entity:
+      integration: gecko
+      domain: sensor
+  fields:
+    number:
+      required: true
+      example: 2
+      selector:
+        number:
+          min: 0
+          max: 255
+          mode: box
+    days:
+      required: false
+      example: weekday
+      selector:
+        select:
+          options:
+            - everyday
+            - weekday
+            - weekend
+            - sunday
+            - monday
+            - tuesday
+            - wednesday
+            - thursday
+            - friday
+            - saturday
+    to_day:
+      required: false
+      example: friday
+      selector:
+        select:
+          options:
+            - sunday
+            - monday
+            - tuesday
+            - wednesday
+            - thursday
+            - friday
+            - saturday
+    start:
+      required: false
+      example: "14:00:00"
+      selector:
+        time:
+    stop:
+      required: false
+      example: "15:00:00"
+      selector:
+        time:
+
+delete_schedule:
+  target:
+    entity:
+      integration: gecko
+      domain: sensor
+  fields:
+    number:
+      required: true
+      example: 2
+      selector:
+        number:
+          min: 0
+          max: 255
+          mode: box

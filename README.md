@@ -185,6 +185,50 @@ Platform | Description
 `water_heater` | An alternative way to set spa water temperature
 `date` | Reminder reset support
 
+## Watercare schedules and the radio channel
+
+Each watercare mode (Away From Home, Standard, Energy Saving, Super Energy Saving and
+Weekender) has its own Economy and Filtration schedules. There is a `Watercare schedules`
+sensor for each mode. Its state is the number of schedules, and its attributes list them:
+
+```yaml
+mode: Standard
+active: true
+schedules:
+  - number: 0
+    type: filtration
+    days: sun-sat
+    start: "23:30"
+    stop: "02:30"
+```
+
+Use these services, targeting the sensor of the mode you want to change, to change the
+schedules. `number` is the schedule's number from the sensor's attributes.
+
+Service | Fields
+-- | --
+`gecko.add_schedule` | `type` (economy or filtration), `days`, optional `to_day`, `start`, `stop`
+`gecko.modify_schedule` | `number`, and any of `days`, `to_day`, `start`, `stop` to change
+`gecko.delete_schedule` | `number`
+
+`days` is a single day, or `weekday`, `weekend` or `everyday`. To use a range such as
+Tuesday to Thursday, set `days` to `tuesday` and `to_day` to `thursday`.
+
+```yaml
+action: gecko.add_schedule
+target:
+  entity_id: sensor.hot_spring_watercare_schedules_standard
+data:
+  type: filtration
+  days: weekday
+  start: "12:00:00"
+  stop: "13:00:00"
+```
+
+The `Radio channel` number (in the configuration section of the device) shows and changes
+the radio channel used by the in.touch2 module, from 10 to 31. The module needs to retune
+when the channel changes, so the spa may be unreachable for a short while afterwards.
+
 ## Example screen shot
 
 ![Screenshots][screenshotimg]

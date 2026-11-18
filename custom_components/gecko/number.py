@@ -1,16 +1,18 @@
 """Number platform for Gecko."""
 
 import logging
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
-from homeassistant.components.number import NumberEntity
+from geckolib import MAX_CHANNEL, MIN_CHANNEL
+from homeassistant.components.number import NumberEntity, NumberMode
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN, NUMBER
-from .entity import GeckoEntity
+from .entity import GeckoEntity, GeckoEntityBase
 
 if TYPE_CHECKING:
     from .spa_manager import GeckoSpaManager
@@ -61,6 +63,9 @@ async def async_setup_entry(
                 )
             )
 
+    if spaman.can_use_facade and spaman.channel_sensor is not None:
+        numbers.append(GeckoChannelNumber(spaman, entry))
+
     async_add_entities(numbers)
     spaman.platform_loaded(NUMBER)
 
@@ -106,3 +111,65 @@ class GeckoNumber(GeckoEntity, NumberEntity):
     def device_class(self) -> str:
         """Return the device class of the sensor."""
         return ""  # self._automation_entity.device_class
+
+
+class GeckoChannelNumber(GeckoEntityBase, NumberEntity):
+    """
+    Radio channel of the in.touch2 module.
+
+    Changing the channel makes the module retune, so the spa may be unreachable
+    for a short while afterwards.
+    """
+
+    def __init__(self, spaman: "GeckoSpaManager", config_entry: ConfigEntry) -> None:
+        """Initialize the radio channel number."""
+        super().__init__(
+            spaman,
+            config_entry,
+            f"{spaman.unique_id}-RadioChannelSet",
+            "Radio channel",
+            spaman.spa_name,
+        )
+        self._entity_category = EntityCategory.CONFIG
+        spaman.channel_sensor.watch(self._on_change)
+
+    def _on_change(self, _sender: Any, _old_value: Any, _new_value: Any) -> None:
+        """Notify HA of the change."""
+        if self.hass is not None:
+            self.async_schedule_update_ha_state(force_refresh=True)
+
+    @property
+    def native_value(self) -> float:
+        """Return the current channel."""
+        return self.spaman.channel_sensor.channel
+
+    @property
+    def native_min_value(self) -> float:
+        """Get the lowest channel."""
+        return MIN_CHANNEL
+
+    @property
+    def native_max_value(self) -> float:
+        """Get the highest channel."""
+        return MAX_CHANNEL
+
+    @property
+    def native_step(self) -> float:
+        """Get the step size."""
+        return 1
+
+    @property
+    def mode(self) -> NumberMode:
+        """Return the preferred entry mode."""
+        return NumberMode.BOX
+
+    @property
+    def icon(self) -> str:
+        """Get icon."""
+        return "mdi:radio-tower"
+
+    async def async_set_native_value(self, value: float) -> None:
+        """Change the radio channel."""
+        if not await self.spaman.spa.async_set_channel(int(value)):
+            msg = "The in.touch2 module did not acknowledge the channel change"
+            raise HomeAssistantError(msg)
