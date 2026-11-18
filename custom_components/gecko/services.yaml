@@ -15,8 +15,10 @@ add_schedule:
       selector:
         select:
           options:
-            - economy
-            - filtration
+            - value: filtration
+              label: Filter cycle
+            - value: economy
+              label: Economy
     days:
       required: true
       example: weekday

@@ -32,5 +32,69 @@
         }
       }
     }
+  },
+  "services": {
+    "add_schedule": {
+      "name": "Add schedule",
+      "description": "Add a filter cycle or economy schedule to the watercare mode of the targeted Watercare schedules sensor.",
+      "fields": {
+        "type": {
+          "name": "Type",
+          "description": "Filter cycle runs the filtration. Economy sets the times when the spa runs in economy mode."
+        },
+        "days": {
+          "name": "Days",
+          "description": "The day the schedule runs, or Weekday, Weekend or Everyday. To run on a range of days, choose the first day here and the last in 'To day'."
+        },
+        "to_day": {
+          "name": "To day",
+          "description": "The last day of a range of days that starts at 'Days'. Leave empty for a single day, Weekday, Weekend or Everyday."
+        },
+        "start": {
+          "name": "Start time",
+          "description": "When the schedule starts."
+        },
+        "stop": {
+          "name": "Stop time",
+          "description": "When the schedule stops."
+        }
+      }
+    },
+    "modify_schedule": {
+      "name": "Modify schedule",
+      "description": "Change the days or times of a schedule. Only the fields you fill in are changed.",
+      "fields": {
+        "number": {
+          "name": "Schedule number",
+          "description": "The number of the schedule, as listed in the 'schedules' attribute of the Watercare schedules sensor."
+        },
+        "days": {
+          "name": "Days",
+          "description": "The day the schedule runs, or Weekday, Weekend or Everyday. To run on a range of days, choose the first day here and the last in 'To day'."
+        },
+        "to_day": {
+          "name": "To day",
+          "description": "The last day of a range of days that starts at 'Days'. Leave empty for a single day, Weekday, Weekend or Everyday."
+        },
+        "start": {
+          "name": "Start time",
+          "description": "When the schedule starts."
+        },
+        "stop": {
+          "name": "Stop time",
+          "description": "When the schedule stops."
+        }
+      }
+    },
+    "delete_schedule": {
+      "name": "Delete schedule",
+      "description": "Delete a schedule from the watercare mode of the targeted Watercare schedules sensor.",
+      "fields": {
+        "number": {
+          "name": "Schedule number",
+          "description": "The number of the schedule, as listed in the 'schedules' attribute of the Watercare schedules sensor."
+        }
+      }
+    }
   }
 }
